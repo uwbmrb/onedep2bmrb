@@ -20,7 +20,7 @@ import re
 
 if __name__ == "__main__" :
     if len( sys.argv ) > 1 : 
-        infile = open( sys.argv[1], "rb" )
+        infile = open( sys.argv[1], "r" )
     else : infile = sys.stdin
 
     rgx = re.compile( r"^_([^.]+)\.(.+)$" )

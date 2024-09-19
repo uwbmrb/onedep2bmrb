@@ -37,7 +37,7 @@ def readcsv( mapdb, filename, stardict, verbose = False ) :
 
     sql = "insert into tagmap (pdbx_table,pdbx_col,bmrb_table,bmrb_col,func,spec) values (:pdbtbl,:pdbcol,:bmrbtbl,:bmrbcol,:fn,:sp)"
 
-    with open( filename, "rb" ) as f :
+    with open( filename, "r" ) as f :
         c = csv.DictReader( f )
         for row in c :
 
@@ -89,7 +89,7 @@ def make_bmrb_taglist( conn, csvfile, verbose = False ) :
     infile = os.path.realpath( csvfile )
 
     codes = []
-    with open( infile, "rb" ) as f :
+    with open( infile, "r" ) as f :
 
         curs = conn.cursor()
         curs.execute( "create table bmrbtags (tbl text,col text,matchcode integer,func integer)" )

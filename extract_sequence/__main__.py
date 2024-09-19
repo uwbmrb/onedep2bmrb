@@ -117,7 +117,7 @@ if __name__ == "__main__" :
         sys.stderr.write( "Missing input filename\n" )
         sys.exit( 1 )
 
-    with open( sys.argv[1], "rb" ) as fin :
+    with open( sys.argv[1], "r" ) as fin :
         e = sas.ErrorHandler()
         c = Ch( verbose = False )
         l = sas.StarLexer( fp = fin, bufsize = 0, verbose = False )

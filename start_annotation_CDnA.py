@@ -186,7 +186,7 @@ class StartAnnotation( object ) :
             if ext == ".gz" :
                 tgt = "work/data/" + os.path.split( base )[1]
                 with open( tgt, "wb" ) as out :
-                    gz = gzip.open( f, "rb" )
+                    gz = gzip.open( f, "r" )
                     out.write( gz.read() )
                     gz.close()
 

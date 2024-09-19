@@ -105,7 +105,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 
         h = cls( star = entry, verbose = verbose )
 
-        with open( fname, "rb" ) as f :
+        with open( fname, "r" ) as f :
             l = pdbx2bmrb.sas.StarLexer( f, bufsize = 0, verbose = False ) #verbose )
             p = pdbx2bmrb.sas.DdlParser.parse( lexer = l, content_handler = h, error_handler = h, verbose = False ) # verbose )
 

@@ -49,12 +49,12 @@ class CifReader( sas.ContentHandler, sas.ErrorHandler ) :
 
             connection = sqlite3.connect( ":memory:" )
             sql = ""
-            with open( script, "rb" ) as f :
+            with open( script, "r" ) as f :
                 sql = f.read()
             connection.executescript( sql )
 
         rdr = cls( connection = connection, verbose = verbose )
-        with open( infile, "rb" ) as pdbx :
+        with open( infile, "r" ) as pdbx :
             l = sas.StarLexer( pdbx )
             p = sas.CifParser.parse( lexer = l, content_handler = rdr, error_handler = rdr, verbose = verbose )
             rdr.connection.commit()

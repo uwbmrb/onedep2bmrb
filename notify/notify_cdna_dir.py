@@ -625,7 +625,7 @@ class Notifier(object):
         curs = self._store.cursor()
         params = {}
         fname = os.path.realpath(self._props.get("cdna", "statusfile"))
-        with open(fname, "rb") as inf:
+        with open(fname, "r") as inf:
             rdr = csv.DictReader(inf, delimiter="\t")
             for row in rdr:
 
@@ -704,7 +704,7 @@ class Notifier(object):
         old = {}
         stampfile = self._props.get("cdna", "stampfile")
         if os.path.exists(stampfile):
-            with open(stampfile, "rb") as fin:
+            with open(stampfile, "r") as fin:
                 rdr = csv.reader(fin)
                 for row in rdr:
                     old[row[0]] = row[1]
@@ -766,7 +766,7 @@ class Notifier(object):
         sql = "insert into obsolete (oldid,newid) values (:old,:new)"
         params = {}
         curs = self._store.cursor()
-        with open(obsfile, "rb") as fin:
+        with open(obsfile, "r") as fin:
             first = True
             for line in fin:
                 if first:

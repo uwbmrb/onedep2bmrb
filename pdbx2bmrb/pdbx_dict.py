@@ -70,7 +70,7 @@ if __name__ == "__main__" :
     c = Handler()
 
     if len( sys.argv ) > 1 : 
-        infile = open( sys.argv[1], "rb" )
+        infile = open( sys.argv[1], "r" )
     else : infile = sys.stdin
     l = pdbx2bmrb.sas.StarLexer( fp = infile )
 #            , bufsize = 0 )
