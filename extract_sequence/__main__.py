@@ -85,7 +85,7 @@ class Ch( sas.ContentHandler ) :
         if tag == "_Atom_chem_shift.Comp_ID" :
 #            if self._verbose :
 #            sys.stdout.write( "Comp_ID : last_num %s,val %s\n" % (self._last_num,val,) )
-            if self._last_num in self._seq.keys() :
+            if self._last_num in list(self._seq.keys()) :
                 if self._seq[self._last_num] != val :
                     sys.stderr.write( "ERROR: Comp ID for # %s changed: was %s, now %s in line %s\n" \
                             (self._last_num, self._seq[self._last_num], val, line,) )
@@ -125,11 +125,11 @@ if __name__ == "__main__" :
 
         seq = {}
         if len( c._seq ) > 0 : 
-            for k in sorted( c._seq.keys(), cmp = lambda x, y: cmp( int( x ), int( y ) ) ) :
+            for k in sorted( list(c._seq.keys()), cmp = lambda x, y: cmp( int( x ), int( y ) ) ) :
 #                sys.stdout.write( "%s : %s\n" % (k,self._seq[k]) )
                 i = int( k )
                 code = c._seq[k].upper()
-                if code in c.AAMAP.keys() :
+                if code in list(c.AAMAP.keys()) :
                     seq[i] = c.AAMAP[code]
                 else :
                     seq[i] = "X"

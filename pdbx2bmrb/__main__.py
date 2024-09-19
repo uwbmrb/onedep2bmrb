@@ -2,10 +2,10 @@
 #
 #
 
-from __future__ import absolute_import
+
 import sys
 import os
-import ConfigParser
+import configparser
 import pprint
 import traceback
 
@@ -20,7 +20,7 @@ import pdbx2bmrb
 # read mmcif and return its db wrapper
 #
 def read_mmcif( config, infile, verbose = False ) :
-    assert isinstance( config, ConfigParser.ConfigParser )
+    assert isinstance( config, configparser.ConfigParser )
     ddlfile = os.path.realpath( config.get( "pdbx", "sqlscript" ) )
     ciffile = os.path.realpath( infile )
     cif = pdbx2bmrb.CifReader.parse( infile = ciffile, ddlscript = ddlfile, verbose = verbose )
@@ -29,7 +29,7 @@ def read_mmcif( config, infile, verbose = False ) :
 # convert to nmr-star and retrun db wrapper
 #
 def convert( config, cif, verbose = False ) :
-    assert isinstance( config, ConfigParser.ConfigParser )
+    assert isinstance( config, configparser.ConfigParser )
     assert isinstance( cif, pdbx2bmrb.CifReader )
 
     star = pdbx2bmrb.BMRBEntry.from_scratch( config = cp, verbose = verbose )
@@ -58,8 +58,8 @@ def convert( config, cif, verbose = False ) :
             saveframes[1] = { sfcat : [t] }
         else :
             found = False
-            for (k, v) in saveframes.items() :
-                if sfcat in v.keys() :
+            for (k, v) in list(saveframes.items()) :
+                if sfcat in list(v.keys()) :
                     saveframes[k][sfcat].append( t )
                     found = True
                     break
@@ -94,7 +94,7 @@ def convert( config, cif, verbose = False ) :
 #    star._db.verbose = True
 
     for i in sorted( saveframes.keys() ) :
-        s = saveframes[i].keys()[0]
+        s = list(saveframes[i].keys())[0]
 
 # (this is the order of saveframes in nmr-star file)
 #
@@ -179,12 +179,12 @@ def convert( config, cif, verbose = False ) :
             crystal = {}
             for (eid,meth) in star._db.iter_values( table = "Entity", columns = ("ID","Src_method") ) :
                 if meth is None : meth = "man"
-                if not meth in crystal.keys() :
+                if not meth in list(crystal.keys()) :
                     crystal[meth] = pdbx2bmrb.OneDepToBmrb.map_natural_source( cifdb = cif, 
                             mapdb = cif.connection, method = meth, 
                             verbose = ((options.debug & 2) != 0 and True or False) )
 
-            for meth in crystal.keys() :
+            for meth in list(crystal.keys()) :
                 if crystal[meth] is not None :
                     star.make_unique_saveframe( cifdb = cif, tables = crystal[meth], category = "natural_source",
                     freetable = "Entity_natural_src_list", idtag = "Entity_natural_src_list_ID" )
@@ -195,12 +195,12 @@ def convert( config, cif, verbose = False ) :
             crystal = {}
             for (eid,meth) in star._db.iter_values( table = "Entity", columns = ("ID","Src_method") ) :
                 if meth is None : meth = "man"
-                if not meth in crystal.keys() :
+                if not meth in list(crystal.keys()) :
                     crystal[meth] = pdbx2bmrb.OneDepToBmrb.map_experimental_source( cifdb = cif, 
                             mapdb = cif.connection, method = meth,
                             verbose = ((options.debug & 2) != 0 and True or False) )
 
-            for meth in crystal.keys() :
+            for meth in list(crystal.keys()) :
                 if crystal[meth] is not None :
                     star.make_unique_saveframe( cifdb = cif, tables = crystal[meth], category = "experimental_source",
                     freetable = "Entity_experimental_src_list", idtag = "Entity_experimental_src_list_ID" )
@@ -351,7 +351,7 @@ if __name__ == "__main__" :
             op.error( "Input file not found: %s" % (options.mdlfile,) )
             sys.exit( 2 )
 
-    cp = ConfigParser.SafeConfigParser()
+    cp = configparser.SafeConfigParser()
     cp.read( options.conffile )
 
     with pdbx2bmrb.timer( "Total runtime", verbose = options.verbose ) :

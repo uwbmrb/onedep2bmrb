@@ -4,7 +4,7 @@
 #
 #
 
-from __future__ import absolute_import
+
 
 import sys
 import os
@@ -134,7 +134,7 @@ def make_bmrb_taglist( conn, csvfile, verbose = False ) :
                     if verbose :
                         sys.stdout.write( sql )
                         sys.stdout.write( " : " )
-                        for (key, val) in params.iteritems() :
+                        for (key, val) in params.items() :
                             sys.stdout.write( "%s:%s, " % (key,val,) )
 
                     curs.execute( sql, params )
@@ -252,7 +252,7 @@ def make_pdb_taglist( conn, csvfile, verbose = False ) :
                         if verbose :
                             sys.stdout.write( sql )
                             sys.stdout.write( " : " )
-                            for (key, val) in params.iteritems() :
+                            for (key, val) in params.items() :
                                 sys.stdout.write( "%s:%s, " % (key,val,) )
 
                         curs.execute( sql, params )
@@ -376,7 +376,7 @@ if __name__ == "__main__" :
         while True :
             row = curs.fetchone()
             if row == None : break
-            print "%s,_%s.%s" % tuple( row )
+            print("%s,_%s.%s" % tuple( row ))
 
     make_pdb_taglist( conn, csvfile = matchfile, verbose = options.verbose )
 
@@ -385,7 +385,7 @@ if __name__ == "__main__" :
         while True :
             row = curs.fetchone()
             if row == None : break
-            print "%s,%s,%s,%s,_%s.%s" % tuple( row )
+            print("%s,%s,%s,%s,_%s.%s" % tuple( row ))
 
     make_map( conn, verbose = options.verbose )
 

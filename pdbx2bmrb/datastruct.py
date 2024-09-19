@@ -4,7 +4,7 @@
 # this all ought to be refactored into some semblance
 # of reason sometime...
 #
-from __future__ import absolute_import
+
 import sys
 import re
 import collections
@@ -135,7 +135,7 @@ class StarCol( object ) :
 
     def __repr__( self ) :
         rc = " - " + self.col + "\n"
-        for c in self.pdbcols.keys() :
+        for c in list(self.pdbcols.keys()) :
             rc += str( self.pdbcols[c] ) + "\n"
         return rc
 
@@ -165,7 +165,7 @@ class StarCol( object ) :
     @property
     def numvals( self ) :
         rc = 0
-        for i in self.pdbcols.keys() :
+        for i in list(self.pdbcols.keys()) :
             if rc < self.pdbcols[i].numvals :
                 rc = self.pdbcols[i].numvals
         return rc
@@ -175,7 +175,7 @@ class StarCol( object ) :
     @property
     def numrows( self ) :
         rc = 0
-        for i in self.pdbcols.keys() :
+        for i in list(self.pdbcols.keys()) :
             if rc < self.pdbcols[i].numrows :
                 rc = self.pdbcols[i].numrows
         return rc
@@ -211,12 +211,12 @@ class StarTable( object ) :
 
     def __repr__( self ) :
         rc = ". " + self.table + ":\n"
-        for c in self.cols.keys() :
+        for c in list(self.cols.keys()) :
             rc += str( self.cols[c] )
         return rc
 
     def __contains__( self, tagname ) :
-        return tagname in self.cols.keys()
+        return tagname in list(self.cols.keys())
 
     def __getitem__( self, tagname ) :
         return self.cols[tagname]
@@ -231,14 +231,14 @@ class StarTable( object ) :
         return len( self.cols )
 
     def keys( self ) :
-        return self.cols.keys()
+        return list(self.cols.keys())
 
     # max non-null rows in columns
     #
     @property
     def numvals( self ) :
         rc = 0
-        for i in self.cols.keys() :
+        for i in list(self.cols.keys()) :
             if rc < self.cols[i].numvals :
                 rc = self.cols[i].numvals
         return rc
@@ -248,7 +248,7 @@ class StarTable( object ) :
     @property
     def numrows( self ) :
         rc = 0
-        for i in self.cols.keys() :
+        for i in list(self.cols.keys()) :
             if rc < self.cols[i].numrows :
                 rc = self.cols[i].numrows
         return rc
@@ -259,8 +259,8 @@ class StarTable( object ) :
     #
     @property
     def is_fifty( self ) :
-        for i in self.cols.keys() :
-            for j in self.cols[i].pdbcols.keys() :
+        for i in list(self.cols.keys()) :
+            for j in list(self.cols[i].pdbcols.keys()) :
                 if self.cols[i].pdbcols[j].code != 50 :
                     return False
         return True
@@ -277,7 +277,7 @@ class StarTable( object ) :
 #
         if self.table == "Sample_condition_list" :
             if self._verbose : pprint.pprint( "Sample_condition_list", indent = 2 )
-            if not "ID" in self.cols.keys() : return
+            if not "ID" in list(self.cols.keys()) : return
             tc = self["ID"]
             if not "_pdbx_nmr_exptl_sample_conditions.conditions_id" in tc : return
             if tc["_pdbx_nmr_exptl_sample_conditions.conditions_id"].numvals > 0 :
@@ -292,7 +292,7 @@ class StarTable( object ) :
 #
         if self.table == "Entity" :
             if self._verbose : pprint.pprint( "Entity", indent = 2 )
-            if "ID" in self.cols.keys() :
+            if "ID" in list(self.cols.keys()) :
                 tc = self["ID"]
                 if self._verbose : pprint.pprint( tc, indent = 4 )
                 if "_entity.id" in tc :
@@ -302,7 +302,7 @@ class StarTable( object ) :
                             if c[:8] != "_entity." :
                                 if self._verbose : pprint.pprint( "deleting", indent = 6 )
                                 del tc.pdbcols[c]
-            if "Name" in self.cols.keys() :
+            if "Name" in list(self.cols.keys()) :
                 tc = self["Name"]
                 if self._verbose : pprint.pprint( tc, indent = 4 )
                 if "_entity.pdbx_description" in tc :

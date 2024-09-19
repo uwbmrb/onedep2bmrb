@@ -13,7 +13,7 @@
 #
 
 
-from __future__ import absolute_import
+
 
 import sys
 import re
@@ -45,7 +45,7 @@ if __name__ == "__main__" :
         m = bad.search( col )
         if m : col = '"%s"' % (col,)
 
-        if not tbl in dic.keys() :
+        if not tbl in list(dic.keys()) :
             dic[tbl] = set()
 
         dic[tbl].add( col )

@@ -5,12 +5,12 @@
 # (someday I might refactor it)
 #
 
-from __future__ import absolute_import
+
 import sys
 import os
 import re
 import collections
-import ConfigParser
+import configparser
 import pprint
 
 _UP = os.path.realpath( "%s/../" % (os.path.split( __file__ )[0],) )
@@ -89,7 +89,7 @@ class BMRBEntry( object ) :
     #
     #
     def __init__( self, config, verbose = False ) :
-        assert isinstance( config, ConfigParser.SafeConfigParser )
+        assert isinstance( config, configparser.SafeConfigParser )
         self._props = config
         self.verbose = verbose
 
@@ -601,7 +601,7 @@ class BMRBEntry( object ) :
                         if curs.description[i][0] == "Name" :
                             vals = re.split( r",", row[i] )
                             if len( vals ) > 0 :
-                                if eid in names.keys() : names[eid].extend( vals )
+                                if eid in list(names.keys()) : names[eid].extend( vals )
                                 else : names[eid] = vals
 #                        pprint.pprint( row )
 #                        pprint.pprint( names )
@@ -649,7 +649,7 @@ class BMRBEntry( object ) :
         if len( names ) > 0 :
             stmt.reset()
             stmt.table = "Entity_common_name"
-            for eid in names.keys() :
+            for eid in list(names.keys()) :
                 vals = set( names[eid] )
                 for val in vals :
                     val = pdbx2bmrb.sanitize( val )
@@ -694,7 +694,7 @@ class BMRBEntry( object ) :
 #        print ids
 
         for c in pdbx2bmrb.STD_CHEM_COMPS :
-            if c in ids.keys() :
+            if c in list(ids.keys()) :
                 del ids[c]
 
 #        print "IDs now:", ids
@@ -739,7 +739,7 @@ class BMRBEntry( object ) :
 
 # skip standard chem. comps
 #
-                if not cid in ids.keys() : continue
+                if not cid in list(ids.keys()) : continue
 
                 for i in range( len( row ) ) :
 #                    print ">>>", i, curs.description[i][0], row[i]
@@ -1062,7 +1062,7 @@ class BMRBEntry( object ) :
         sql = 'update "Upload_data" set "Data_file_Sf_category"=:cat,"Data_file_syntax"=:syn ' \
             + 'where "Data_file_syntax"=:typ and "Entry_ID"=:id'
 
-        for (key, val) in TYPES.items() :
+        for (key, val) in list(TYPES.items()) :
             params["typ"] = key
             params["cat"] = val[0]
             params["syn"] = val[1]
@@ -1819,7 +1819,7 @@ class BMRBEntry( object ) :
         params = { "entryid" : self.entryid }
         sql = 'select count(*) from "PDBX_nonpoly_scheme" where "Entry_ID"=:entryid'
         rs = self._db.query( sql, params )
-        row = rs.next()
+        row = next(rs)
         has_nonpoly_entity = (int( row[0] ) > 0)
 
         sql1 = 'select count(*) from "PDBX_poly_seq_scheme" where "Entity_assembly_ID"=:aid and ' \
@@ -1843,7 +1843,7 @@ class BMRBEntry( object ) :
                 sys.stdout.write( sql1 + "\n" )
                 pprint.pprint( params )
             rs = self._db.query( sql1, params )
-            row = rs.next()
+            row = next(rs)
             cnt = int( row[0] )
             if self.verbose :
                 sys.stdout.write( "==> %d rows (poly_seq)\n" % (cnt,) )
@@ -1861,7 +1861,7 @@ class BMRBEntry( object ) :
 # it may be in PDBX_nonpoly?
 #
                 rs = self._db.query( sql2, params )
-                row = rs.next()
+                row = next(rs)
                 cnt = int( row[0] )
                 if self.verbose :
                     sys.stdout.write( "==> %d rows (nonpoly)\n" % (cnt,) )
@@ -1923,7 +1923,7 @@ class BMRBEntry( object ) :
         sql = 'select count(*) from "Entity_comp_index" i join "PDBX_nonpoly_scheme" s ' \
             + 'on s."Entry_ID"=i."Entry_ID" and s."Entity_ID"=i."Entity_ID"'
         rs = self._db.query( sql )
-        row = rs.next()
+        row = next(rs)
         cnt = int( row[0] )
         if cnt < 1 :
 
@@ -1942,7 +1942,7 @@ class BMRBEntry( object ) :
             for (seq,aseq,res,eid) in self._db.iter_values( table = "PDBX_nonpoly_scheme",
                     columns = ("Comp_index_ID","Auth_seq_num","Comp_ID","Entity_ID"),
                     entryid = self.entryid ) :
-                if not eid in ids.keys() :
+                if not eid in list(ids.keys()) :
                     raise Exception( "entity ID %d is in pdbx_nonpoly but not in entity (this cannot happen" % (eid,) )
                 params["sfid"] = ids[eid]
                 params["seq"] = seq
@@ -2142,7 +2142,7 @@ if __name__ == "__main__" :
         sys.stderr.write( "usage: %s <config file>\n" % (sys.argv[0],) )
         sys.exit( 1 )
 
-    cp = ConfigParser.SafeConfigParser()
+    cp = configparser.SafeConfigParser()
     cp.read( sys.argv[1] )
 
     star = BMRBEntry.from_scratch( config = cp, verbose = True )

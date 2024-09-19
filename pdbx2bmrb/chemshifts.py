@@ -3,7 +3,7 @@
 # here be dragons
 #
 
-from __future__ import absolute_import
+
 
 import os
 import sys
@@ -159,7 +159,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 # at this point list_ID is id or the upload file name
 #
         cslists = {}
-        for i in self._lists.keys() :
+        for i in list(self._lists.keys()) :
             if self._lists[i]["has_shifts"] :
                 cslists[i] = self._lists[i]
 
@@ -168,7 +168,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 #  without also updating metadata tables. it would then no longer match the PDB entry.)
 #
         if len( cslists ) == 1 :
-            for i in cslists.keys() :
+            for i in list(cslists.keys()) :
                 if cslists[i]["id"] is None :
                     cslists[i]["id"] = 1
 
@@ -218,7 +218,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
             self._dump_shifts()
 
         rs = self._entry._db.query( 'select count(*) from "Atom_chem_shift" where "Assigned_chem_shift_list_ID" is NULL' )
-        row = rs.next()
+        row = next(rs)
         if row[0] != 0 :
             if len( cslists ) != 1 :
                 sys.stderr.write( "ERR: %d rows without Assigned_chem_shift_list_ID in Atom_chem_shift\n" % (row[0],) )
@@ -232,7 +232,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 # try again
 #
         rs = self._entry._db.query( 'select count(*) from "Atom_chem_shift" where "Assigned_chem_shift_list_ID" is NULL' )
-        row = rs.next()
+        row = next(rs)
         if row[0] != 0 :
             sys.stderr.write( "ERR: %d rows without Assigned_chem_shift_list_ID in Atom_chem_shift\n" % (row[0],) )
             sys.stderr.write( "     and %d chemical shift lists after cleanup\n" % (len( cslists ),) )
@@ -244,7 +244,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 #
         rs = self._entry._db.query( 'select "ID","Sf_ID" from "Assigned_chem_shift_list"' )
         for row in rs :
-            for i in cslists.keys() :
+            for i in list(cslists.keys()) :
                 if row[0] == cslists[i]["id"] :
                     cslists[i]["sfid"] = row[1]
 
@@ -263,10 +263,10 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
 
         params = {}
         sql = 'update "Atom_chem_shift" set "Sf_ID"=:sid where "Assigned_chem_shift_list_ID"=:lid'
-        for i in cslists.keys() :
+        for i in list(cslists.keys()) :
             params.clear()
             params["lid"] = cslists[i]["id"]
-            if not "sfid" in cslists[i].keys() :
+            if not "sfid" in list(cslists[i].keys()) :
                 sys.stderr.write( "ERR: No saveframe ID for CS list %s\n" % (cslists[i]["filename"],) )
                 sys.stderr.write( "     Using %d: Atom_chem_shift tables may be merged!\n" % (sfid,) )
                 params["sid"] = sfid
@@ -423,7 +423,7 @@ class ChemShiftHandler( pdbx2bmrb.sas.ContentHandler, pdbx2bmrb.sas.ErrorHandler
     def endData( self, line, name ) :
         if self._verbose :
             sys.stdout.write( "%s.endData(%s)\n" % (self.__class__.__name__,name) )
-        if not self._lists[self._blockid].has_key( "has_shifts" ) :
+        if "has_shifts" not in self._lists[self._blockid] :
             self._lists[self._blockid]["has_shifts"] = False
         else :
             if self._verbose :
@@ -686,7 +686,7 @@ class ChemShifts( object ) :
 # otherwise fall through to startswith() match so e.g. "CA" matches "C"
 #
             atype = None
-            for nuc in sorted( pdbx2bmrb.BMRBEntry.ISOTOPES.keys(), cmp = lambda x,y : len( x ) > len( y ) and -1 or cmp (x, y) ) :
+            for nuc in sorted( list(pdbx2bmrb.BMRBEntry.ISOTOPES.keys()), cmp = lambda x,y : len( x ) > len( y ) and -1 or cmp (x, y) ) :
 
 #                sys.stdout.write( "Checking '%s' vs '%s'\n" % (m.group( 1 )[:len( nuc ) + 1], nuc,) )
 
@@ -753,7 +753,7 @@ class ChemShifts( object ) :
         sql = 'update "Atom_chem_shift" set "Atom_isotope_number"=:iso where "Entry_ID"=:entryid ' \
             + 'and "Atom_isotope_number" is NULL and "Atom_type"=:nuc'
 
-        for (nuc,iso) in pdbx2bmrb.BMRBEntry.ISOTOPES.iteritems() :
+        for (nuc,iso) in pdbx2bmrb.BMRBEntry.ISOTOPES.items() :
 
             if self.verbose : 
                 sys.stdout.write( sql )
@@ -792,7 +792,7 @@ class ChemShifts( object ) :
             err = None
             rs = self._entry._db.query( 'select "%s" from "Assigned_chem_shift_list" where ' \
                 '"Entry_ID"=:entryid' % (col[0],), params )
-            row = rs.next()
+            row = next(rs)
             if row[0] is not None :
                 try :
                     float( row[0] )
@@ -861,14 +861,14 @@ class ChemShifts( object ) :
 #
         params = { "flag" : "no" }
         for nuc in pdbx2bmrb.BMRBEntry.REF_NUCLEI :
-            key = nuc.keys()[0]
+            key = list(nuc.keys())[0]
             allnuclei.extend( nuc[key] )
 
             sql = qry % ("','".join( i for i in nuc[key] ),)
             if self.verbose : 
                 sys.stdout.write( sql + "\n" )
             rs = self._entry._db.query( sql )
-            row = rs.next()
+            row = next(rs)
 
             if row[0] > 0 :
                 params["flag"] = "yes"
@@ -886,7 +886,7 @@ class ChemShifts( object ) :
 #
         qry = """select count(*) from "Atom_chem_shift" where "Atom_type" not in ('%s')"""
         rs = self._entry._db.query( qry % ("','".join( i for i in allnuclei ),) )
-        row = rs.next()
+        row = next(rs)
         if row[0] > 0 :
             params["flag"] = "yes"
         else :
@@ -935,7 +935,7 @@ class ChemShifts( object ) :
             + 'and "Original_PDB_strand_ID" is null'
 
         rc = self._entry._db.query( sql, { "entryid" : self._entry.entryid } )
-        row = rc.next()
+        row = next(rc)
         cnt = int( row[0] )
         if cnt > 0 :
             sys.stderr.write( "ERR: %d rows in Atom_chem_shift without Original_PDB_strand_ID!\n" % (cnt,) )
@@ -955,9 +955,9 @@ class ChemShifts( object ) :
 # they should match as either strand_id->chain_id
 #
         sql = 'select count(*) from "Entity_assembly" where "PDB_chain_ID"=:id'
-        for i in ids.keys() :
+        for i in list(ids.keys()) :
             rc = self._entry._db.query( sql, { "id" : i } )
-            row = rc.next()
+            row = next(rc)
             ids[i]["chain"] = int( row[0] )
 
         if self._verbose :
@@ -965,9 +965,9 @@ class ChemShifts( object ) :
             pprint.pprint( ids )
 
         sql = 'select count(*) from "Entity_assembly" where "Asym_ID"=:id'
-        for i in ids.keys() :
+        for i in list(ids.keys()) :
             rc = self._entry._db.query( sql, { "id" : i } )
-            row = rc.next()
+            row = next(rc)
             ids[i]["asym"] = int( row[0] )
 
         if self._verbose :
@@ -975,7 +975,7 @@ class ChemShifts( object ) :
             pprint.pprint( ids )
 
         badrows = False
-        for i in ids.keys() :
+        for i in list(ids.keys()) :
             if (ids[i]["chain"] != 1) and (ids[i]["asym"] != 1) :
                 sys.stderr.write( "ERR: _Atom_chem_shift.Original_PDB_strand_ID %s\n" % (i,) )
                 sys.stderr.write( "     does not map to either Entity_assembly.PDB_chain_ID\n" )
@@ -989,10 +989,10 @@ class ChemShifts( object ) :
 # let's try mapping them
 #
         sql = 'select "ID","Entity_ID","Asym_ID","PDB_chain_ID" from "Entity_assembly" where "PDB_chain_ID"=:id'
-        for i in ids.keys() :
+        for i in list(ids.keys()) :
             rc = self._entry._db.query( sql, { "id" : i } )
             try : # fuck python
-                row = rc.next()
+                row = next(rc)
             except StopIteration :
                 row = None
             if row is None :
@@ -1084,7 +1084,7 @@ class ChemShifts( object ) :
         sql = 'select count(*) from "Atom_chem_shift" where "Entry_ID"=:entryid ' \
             + 'and "Entity_assembly_ID" is null'
         rc = self._entry._db.query( sql, { "entryid" : self._entry.entryid } )
-        row = rc.next()
+        row = next(rc)
         cnt = int( row[0] )
         if cnt > 0 :
 
@@ -1251,7 +1251,7 @@ class ChemShifts( object ) :
         cnt = 0
         sql = 'select count(*) from "Atom_chem_shift" where "Entry_ID"=:entryid and "Comp_index_ID" is null'
         rc = self._entry._db.query( sql, params )
-        row = rc.next()
+        row = next(rc)
         cnt = int( row[0] )
         if cnt > 0 :
             sys.stderr.write( "     Conversion failed\n" )
@@ -1285,7 +1285,7 @@ class ChemShifts( object ) :
                 sys.stdout.write( sql + "\n" )
                 pprint.pprint( params )
             rc = self._entry._db.query( sql, params )
-            row = rc.next()
+            row = next(rc)
             cnt = int( row[0] )
             if self.verbose :
                 sys.stdout.write( "==> %d rows\n" % (cnt,) )
@@ -1348,7 +1348,7 @@ class ChemShifts( object ) :
 
         sql = 'select count(*) from "Atom_chem_shift"'
         rs = self._entry._db.query( sql )
-        row = rs.next()
+        row = next(rs)
         numrows = int( row[0] )
         if numrows < 1 :
             sys.stderr.write( "WARN: no rows in Atom_chem_shift to sort\n" )
@@ -1361,7 +1361,7 @@ class ChemShifts( object ) :
             residues[compid] = {}
 
         sql = 'select distinct "Atom_ID" from "Atom_chem_shift" where "Comp_ID"=:res'
-        for comp in residues.keys() :
+        for comp in list(residues.keys()) :
             rs = self._entry._db.query( sql, params = { "res" : comp } )
             for row in rs :
                 residues[comp][row[0]] = 0
@@ -1370,13 +1370,13 @@ class ChemShifts( object ) :
             sys.stdout.write( "* residues *\n" )
             pprint.pprint( residues )
 
-        for comp in residues.keys() :
+        for comp in list(residues.keys()) :
             if comp in pdbx2bmrb.BMRBEntry.AMINO_ACIDS : 
-                order = sorted( residues[comp].keys(), cmp = self._cmp_aa_atoms )
+                order = sorted( list(residues[comp].keys()), cmp = self._cmp_aa_atoms )
             else :
-                order = sorted( residues[comp].keys(), cmp = self._cmp_other_atoms )
+                order = sorted( list(residues[comp].keys()), cmp = self._cmp_other_atoms )
             for i in range( len( order ) ) :
-                for a in residues[comp].keys() :
+                for a in list(residues[comp].keys()) :
                     if a == order[i] :
                         residues[comp][a] = i
 
@@ -1418,7 +1418,7 @@ class ChemShifts( object ) :
             except :
                 pprint.pprint( params )
                 raise
-            params["new"] = long( num )
+            params["new"] = int( num )
 
             if self.verbose :
                 sys.stdout.write( sql + "\n" )

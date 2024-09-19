@@ -72,7 +72,7 @@ class StartAnnotation( object ) :
     def source( self, val ) :
         assert val is not None
         val = str( val ).strip().lower()
-        assert val in self.SRCDIRS.keys()
+        assert val in list(self.SRCDIRS.keys())
         self._src = val
 
 # see if everything's in place
@@ -95,7 +95,7 @@ class StartAnnotation( object ) :
             sys.stderr.write( "Missing entry source (RCSB, PDBE)\n" )
             sys.exit( 3 )
         self._src = str( self._src ).lower()
-        if not self._src in self.SRCDIRS.keys() :
+        if not self._src in list(self.SRCDIRS.keys()) :
             sys.stderr.write( "Unknown entry source %s\n" % (self._src,) )
             sys.exit( 3 )
 
@@ -167,7 +167,7 @@ class StartAnnotation( object ) :
         assert self._bmrbproj is not None
         assert os.path.isdir( self._srcdir )
 
-        os.umask( 002 )
+        os.umask( 0o02 )
         os.chdir( self.TMPDIR )
         if os.path.isdir( self._bmrbproj ) : shutil.rmtree( self._bmrbproj, ignore_errors = True )
         os.mkdir( self._bmrbproj )
@@ -223,7 +223,7 @@ class StartAnnotation( object ) :
 #
     def cvs_co( self ) :
 
-        os.umask( 002 )
+        os.umask( 0o02 )
         os.chdir( self.ENTRYDIR )
         cmd = [ "cvs", "-d", self.CVSENT, "checkout", self._bmrbproj ]
         p = subprocess.Popen( cmd )

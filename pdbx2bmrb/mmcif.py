@@ -1,7 +1,7 @@
 #!/usr/bin/python -u
 #
 
-from __future__ import absolute_import
+
 import sys
 import os
 import re
@@ -191,13 +191,13 @@ class CifReader( sas.ContentHandler, sas.ErrorHandler ) :
     def _insert_row( self ) :
 
         if len( self._row ) < 1 :
-            if self._verbose : print "nothing to insert"
+            if self._verbose : print("nothing to insert")
             return
 
         params = {}
         colstr = ""
         valstr = ""
-        for (col,val) in self._row.iteritems() :
+        for (col,val) in self._row.items() :
             key = "x%s" % (col.strip( '"' ).replace( "[", "_" ).replace( "]", "_" ).replace( "-", "_"),)
 
 # this should be handled in data()

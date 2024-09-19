@@ -2,12 +2,12 @@
 #
 #
 
-from __future__ import absolute_import
+
 import sys
 import os
 import re
 import sqlite3
-import ConfigParser
+import configparser
 import pprint
 import psycopg2
 
@@ -52,7 +52,7 @@ class OneDepToBmrb( object ) :
         curs.execute( sql )
 
         colstr = pdbx2bmrb.TEMP_KEY_COL_NAME + " integer primary key,"
-        for col in startable.cols.keys() :
+        for col in list(startable.cols.keys()) :
             colstr += '"%s" text,' % (col,)
         colstr = colstr[:-1]
 
@@ -71,7 +71,7 @@ class OneDepToBmrb( object ) :
 # then take the 1st pdbcol and ignore the rest. hope startable.sanitize() sorted them right.
 #
         col = None
-        for c in startable.cols.keys() :
+        for c in list(startable.cols.keys()) :
             if verbose :
                 sys.stdout.write( ">> col:\n" )
                 pprint.pprint( c )
@@ -83,7 +83,7 @@ class OneDepToBmrb( object ) :
             raise Exception( "No columns for table %s" % (startable.table,) )
 
         pdbcols = col.pdbcols
-        for pdbcol in pdbcols.keys() :
+        for pdbcol in list(pdbcols.keys()) :
             pc = pdbcols[pdbcol]
 
             if verbose : pprint.pprint( pc )
@@ -103,9 +103,9 @@ class OneDepToBmrb( object ) :
 
         params = {}
         curs2 = conn.cursor()
-        for c in startable.cols.keys() :
+        for c in list(startable.cols.keys()) :
             pdbcols = startable.cols[c].pdbcols
-            for pdbcol in pdbcols.keys() :
+            for pdbcol in list(pdbcols.keys()) :
                 pc = pdbcols[pdbcol]
                 m = pc._badpat.search( pc.table )
                 if m : tbl = '"%s"' % (pc.table,)
@@ -517,7 +517,7 @@ class OneDepToBmrb( object ) :
 
                     if verbose :
                         sys.stdout.write( sql + ">" )
-                        for (key,val) in params.iteritems() : sys.stdout.write( " " + str( key ) + "," + str( val ) )
+                        for (key,val) in params.items() : sys.stdout.write( " " + str( key ) + "," + str( val ) )
                         sys.stdout.write( "\n" )
                     curs2.execute( sql, params )
 
@@ -559,7 +559,7 @@ class OneDepToBmrb( object ) :
 
             val = pdbx2bmrb.sanitize( row[0] )
             if val is None :
-                print "No ordinal!"
+                print("No ordinal!")
                 continue
             params["id"] = val
             params["name"] = pdbx2bmrb.sanitize( row[1] )
@@ -569,7 +569,7 @@ class OneDepToBmrb( object ) :
 
             if verbose :
                 sys.stdout.write( sql + ">" )
-                for (key,val) in params.iteritems() : sys.stdout.write( " " + str( key ) + "," + str( val ) )
+                for (key,val) in params.items() : sys.stdout.write( " " + str( key ) + "," + str( val ) )
                 sys.stdout.write( "\n" )
             curs2.execute( sql, params )
 
@@ -582,7 +582,7 @@ class OneDepToBmrb( object ) :
     #
     @classmethod
     def update_ets_contacts( cls, config, star, verbose = False ) :
-        assert isinstance( config, ConfigParser.SafeConfigParser )
+        assert isinstance( config, configparser.SafeConfigParser )
         assert isinstance( star, pdbx2bmrb.BMRBEntry )
 
         if not config.has_section( "ets" ) :
@@ -594,7 +594,7 @@ class OneDepToBmrb( object ) :
             srv = config.get( "ets", "host" )
             usr = config.get( "ets", "user" )
             pw = config.get( "ets", "password" )
-        except ConfigParser.NoOptionError :
+        except configparser.NoOptionError :
             sys.stderr.write( "ERR: incomplete 'ets' section in config file" )
             return
 
