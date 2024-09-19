@@ -636,7 +636,7 @@ class Notifier(object):
                 params["pdbid"] = self._sanitize(row["pdb_id"], upcase=True)
                 params["bmrbid"] = self._sanitize(row["bmrb_id"], upcase=True)
                 params["status"] = self._sanitize(row["status_code"], upcase=True)
-                params["date"] = datetime.datetime.strptime(row["initial_deposition_date"], "%Y-%m-%d").date()
+                params["date"] = str(datetime.datetime.strptime(row["initial_deposition_date"], "%Y-%m-%d").date())
                 params["title"] = self._sanitize(row["title"])
                 params["authors"] = self._sanitize(row["authors"])
 
