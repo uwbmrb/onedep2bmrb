@@ -745,7 +745,7 @@ class Notifier(object):
 
         # save
         #
-        with open(stampfile, "wb") as out:
+        with open(stampfile, "w") as out:
             for (depnum, stamp) in files.items():
                 out.write("%s,%s\n" % (depnum, str(int(stamp))))
 

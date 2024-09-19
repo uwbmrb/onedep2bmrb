@@ -393,7 +393,7 @@ if __name__ == "__main__" :
 #    if options.verbose :
 
     outfile = os.path.realpath( options.outfile )
-    with open( outfile, "wb" ) as out :
+    with open( outfile, "w" ) as out :
         curs = conn.cursor()
         sql = """select pdbx_tbl,pdbx_col,bmrb_tbl,bmrb_col,trans_func,coalesce('"' | vtm | '"','') from tagmatch order by pdbx_tbl,pdbx_col"""
         curs.execute( sql )

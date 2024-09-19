@@ -203,7 +203,7 @@ class StartAnnotation( object ) :
 # for now, just make a 0-byte stub
 #
         strfile = "work/bmr%s_3.str" % (str( self._bmrbid ),)
-        with open( strfile, "wb" ) as f :
+        with open( strfile, "w" ) as f :
             f.write( "#\n" )
 
 # import into cvs
