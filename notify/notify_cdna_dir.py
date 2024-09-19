@@ -491,7 +491,7 @@ class Notifier(object):
     def _readprops(self, filename):
         if self.verbose: sys.stdout.write("%s._readprops(%s)\n" % (self.__class__.__name__, filename))
         infile = os.path.realpath(filename)
-        self._props = configparser.SafeConfigParser()
+        self._props = configparser.ConfigParser()
         self._props.read(infile)
 
         assert self._props.has_section("cdna")

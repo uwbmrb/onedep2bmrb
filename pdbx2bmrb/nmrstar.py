@@ -89,7 +89,7 @@ class BMRBEntry( object ) :
     #
     #
     def __init__( self, config, verbose = False ) :
-        assert isinstance( config, configparser.SafeConfigParser )
+        assert isinstance( config, configparser.ConfigParser )
         self._props = config
         self.verbose = verbose
 
@@ -2142,7 +2142,7 @@ if __name__ == "__main__" :
         sys.stderr.write( "usage: %s <config file>\n" % (sys.argv[0],) )
         sys.exit( 1 )
 
-    cp = configparser.SafeConfigParser()
+    cp = configparser.ConfigParser()
     cp.read( sys.argv[1] )
 
     star = BMRBEntry.from_scratch( config = cp, verbose = True )

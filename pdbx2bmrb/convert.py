@@ -582,7 +582,7 @@ class OneDepToBmrb( object ) :
     #
     @classmethod
     def update_ets_contacts( cls, config, star, verbose = False ) :
-        assert isinstance( config, configparser.SafeConfigParser )
+        assert isinstance( config, configparser.ConfigParser )
         assert isinstance( star, pdbx2bmrb.BMRBEntry )
 
         if not config.has_section( "ets" ) :

@@ -351,7 +351,7 @@ if __name__ == "__main__" :
             op.error( "Input file not found: %s" % (options.mdlfile,) )
             sys.exit( 2 )
 
-    cp = configparser.SafeConfigParser()
+    cp = configparser.ConfigParser()
     cp.read( options.conffile )
 
     with pdbx2bmrb.timer( "Total runtime", verbose = options.verbose ) :
